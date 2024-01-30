@@ -8,7 +8,7 @@ import java.util.List;
 public interface UserService {
     Long singUp(User user);
 
-    List<User> getAll();
+    List<User> getAll(String name, String password);
 
     User getById(Long userId);
 
