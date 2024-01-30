@@ -1,4 +1,4 @@
-package com.edsoft.LM.UserRepository;
+package com.edsoft.LM.repository;
 
 import com.edsoft.LM.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +11,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findOneById(Long id);
 
     User findOneByName(String name);
-
-    List<User> findAll();
 }

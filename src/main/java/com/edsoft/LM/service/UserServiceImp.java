@@ -1,8 +1,8 @@
 package com.edsoft.LM.service;
 
-import com.edsoft.LM.UserRepository.UserRepository;
 import com.edsoft.LM.models.User;
 import com.edsoft.LM.pojo.UserPasswordChangePojo;
+import com.edsoft.LM.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -54,8 +54,7 @@ public class UserServiceImp implements UserService {
     @Override
     public List<User> getAll(String name, String password) {
         log.info("Getting all users");
-        List<User> filteredUsers = getUsersByCriteria(name, password);
-        return filteredUsers;
+        return getUsersByCriteria(name, password);
     }
 
     @Override
@@ -73,11 +72,10 @@ public class UserServiceImp implements UserService {
 
     @Override
     public User changePassword(UserPasswordChangePojo userPasswordChangePojo) {
-        log.info("Changing password for user with name: {}", userPasswordChangePojo.name);
-        User user = userRepository.findOneByName(userPasswordChangePojo.name); //DB User
-        user.setPassword(userPasswordChangePojo.newPassword);
-        User newUser = userRepository.save(user);
-        return newUser;
+        log.info("Changing password for user with name: {}", userPasswordChangePojo.getName());
+        User user = userRepository.findOneByName(userPasswordChangePojo.getName()); //DB User
+        user.setPassword(userPasswordChangePojo.getNewPassword());
+        return userRepository.save(user);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.edsoft.LM.validation;
 
-import com.edsoft.LM.UserRepository.UserRepository;
+import com.edsoft.LM.repository.UserRepository;
 import com.edsoft.LM.models.User;
 import com.edsoft.LM.pojo.UserPasswordChangePojo;
 import org.springframework.beans.factory.annotation.Autowired;

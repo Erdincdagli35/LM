@@ -85,8 +85,8 @@ public class UserController {
     @PutMapping("/changePassword")
     public ResponseEntity changePassword(@RequestBody UserPasswordChangePojo userPasswordChangePojo) {
         try {
-            if (!userValidation.existsUserByName(userPasswordChangePojo.name)) {
-                throw new UserNotFoundException(userPasswordChangePojo.name);
+            if (!userValidation.existsUserByName(userPasswordChangePojo.getName())) {
+                throw new UserNotFoundException(userPasswordChangePojo.getName());
             }
         } catch (UserNotFoundException e) {
             log.error("User not found error: {}", e.getMessage());
@@ -96,7 +96,7 @@ public class UserController {
         }
 
         try {
-            if (!userValidation.oldPasswordCheck(userPasswordChangePojo.name, userPasswordChangePojo.oldPassword)) {
+            if (!userValidation.oldPasswordCheck(userPasswordChangePojo.getName(), userPasswordChangePojo.getOldPassword())) {
                 throw new InvalidOldPasswordException();
             }
         } catch (InvalidOldPasswordException e) {
