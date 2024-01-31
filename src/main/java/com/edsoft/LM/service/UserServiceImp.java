@@ -1,8 +1,11 @@
 package com.edsoft.LM.service;
 
+import com.edsoft.LM.mapping.UserMapping;
 import com.edsoft.LM.models.User;
 import com.edsoft.LM.pojo.UserPasswordChangePojo;
+import com.edsoft.LM.pojo.UserReturnPojo;
 import com.edsoft.LM.repository.UserRepository;
+import com.edsoft.LM.security.JwtUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -23,14 +26,53 @@ public class UserServiceImp implements UserService {
 
     private final UserRepository userRepository;
 
+    private final JwtUtil jwtUtil;
+
+    private final UserMapping userMapping;
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
-    public Long singUp(User user) {
+    public UserReturnPojo singUp(User user) {
         log.info("User signed up with ID: {}", user.getId());
+        user.setJwtToken(generateToken(user.getName()));
         user = userRepository.save(user);
-        return user.getId();
+        return userMapping.mapUserToUserReturnPojo(user);
+    }
+
+    @Override
+    public List<UserReturnPojo> getAll(String name, String password) {
+        log.info("Getting all users");
+        List<User> users = getUsersByCriteria(name, password);
+        return userMapping.mapUsersToUserReturnsPojo(users);
+    }
+
+    @Override
+    public User getById(Long userId) {
+        log.info("Getting user by ID: {}", userId);
+        return userRepository.findOneById(userId);
+    }
+
+    @Override
+    public Long delete(Long userId) {
+        log.info("Deleting user with ID: {}", userId);
+        userRepository.delete(getById(userId));
+        return userId;
+    }
+
+    @Override
+    public UserReturnPojo changePassword(UserPasswordChangePojo userPasswordChangePojo) {
+        log.info("Changing password for user with name: {}", userPasswordChangePojo.getName());
+        User user = userRepository.findOneByName(userPasswordChangePojo.getName()); //DB User
+        user.setPassword(userPasswordChangePojo.getNewPassword());
+        User savedUser = userRepository.save(user);
+        return userMapping.mapUserToUserReturnPojo(savedUser);
+    }
+
+    @Override
+    public UserReturnPojo login(User user) {
+        log.info("User logged in with user.name: {}", user.getName());
+        return userMapping.mapUserToUserReturnPojo(user);
     }
 
     public List<User> getUsersByCriteria(String name, String password) {
@@ -51,36 +93,7 @@ public class UserServiceImp implements UserService {
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
-    @Override
-    public List<User> getAll(String name, String password) {
-        log.info("Getting all users");
-        return getUsersByCriteria(name, password);
-    }
-
-    @Override
-    public User getById(Long userId) {
-        log.info("Getting user by ID: {}", userId);
-        return userRepository.findOneById(userId);
-    }
-
-    @Override
-    public Long delete(Long userId) {
-        log.info("Deleting user with ID: {}", userId);
-        userRepository.delete(getById(userId));
-        return userId;
-    }
-
-    @Override
-    public User changePassword(UserPasswordChangePojo userPasswordChangePojo) {
-        log.info("Changing password for user with name: {}", userPasswordChangePojo.getName());
-        User user = userRepository.findOneByName(userPasswordChangePojo.getName()); //DB User
-        user.setPassword(userPasswordChangePojo.getNewPassword());
-        return userRepository.save(user);
-    }
-
-    @Override
-    public String login(String token) {
-        log.info("User logged in with token: {}", token);
-        return token;
+    public String generateToken(String name) {
+        return jwtUtil.generateToken(name);
     }
 }
