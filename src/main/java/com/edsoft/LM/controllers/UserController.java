@@ -3,6 +3,7 @@ package com.edsoft.LM.controllers;
 import com.edsoft.LM.exception.*;
 import com.edsoft.LM.models.User;
 import com.edsoft.LM.pojo.UserPasswordChangePojo;
+import com.edsoft.LM.security.JwtUtil;
 import com.edsoft.LM.service.UserService;
 import com.edsoft.LM.validation.UserValidation;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,8 @@ public class UserController {
 
     private final UserService userService;
     private final UserValidation userValidation;
+
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/singUp")
     public ResponseEntity singUp(@RequestBody User user) {
@@ -54,7 +57,7 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<User>> getAll(@RequestParam(required = false) String name,
                                              @RequestParam(required = false) String password) {
-        return ResponseEntity.ok(userService.getAll(name,password));
+        return ResponseEntity.ok(userService.getAll(name, password));
     }
 
     @DeleteMapping("/{userId}")
@@ -146,6 +149,10 @@ public class UserController {
                             "User Name: " + user.getName() + " Password : " + user.getPassword());
         }
 
-        return ResponseEntity.ok(userService.login(user));
+        return ResponseEntity.ok(userService.login(generateToken(user.getName())));
+    }
+
+    public String generateToken(String name) {
+        return jwtUtil.generateToken(name);
     }
 }

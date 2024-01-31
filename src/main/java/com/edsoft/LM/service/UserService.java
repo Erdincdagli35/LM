@@ -16,5 +16,5 @@ public interface UserService {
 
     User changePassword(UserPasswordChangePojo userPasswordChangePojo);
 
-    User login(User user);
+    String login(String token);
 }

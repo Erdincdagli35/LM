@@ -79,8 +79,8 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public User login(User user) {
-        log.info("User logged in with name: {}", user.getName());
-        return user;
+    public String login(String token) {
+        log.info("User logged in with token: {}", token);
+        return token;
     }
 }
