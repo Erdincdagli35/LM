@@ -50,7 +50,7 @@ public class UserValidation {
     }
 
     public boolean checkJwtToken(User user) {
-        User userDB = userRepository.findOneById(user.getId());
+        User userDB = userRepository.findOneByName(user.getName());
         return userDB.getJwtToken().equals(user.getJwtToken());
     }
 }
